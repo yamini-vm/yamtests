@@ -1,6 +1,8 @@
 import os
+import shutil
 import subprocess
 import glob
+import argparse
 
 import yamtests.constants as constants
 
@@ -55,17 +57,25 @@ def download_expectated_outputs():
 
 
 def run():
+    parser = argparse.ArgumentParser(description="Run yamtests")
+    parser.add_argument("-f", "--force", action="store_true", help="Force download")
+
+    args = parser.parse_args()
+
+    if args.force:
+        shutil.rmtree(constants.YAMTESTS_DIR_PATH)
+
     os.makedirs(constants.YAMTESTS_DIR_PATH, exist_ok=True)
 
-    if not os.path.exists(constants.BIN_DIR_PATH):
+    if not os.path.exists(constants.BIN_DIR_PATH) or args.force:
         print("Downloading binaries...")
         download_binaries()
 
-    if not os.path.exists(constants.PROGRAMS_DIR_PATH):
+    if not os.path.exists(constants.PROGRAMS_DIR_PATH) or args.force:
         print("Downloading programs...")
         download_programs()
 
-    if not os.path.exists(constants.EXPECTED_OUTPUTS_DIR_PATH):
+    if not os.path.exists(constants.EXPECTED_OUTPUTS_DIR_PATH) or args.force:
         print("Downloading expected outputs...")
         download_expectated_outputs()
 
